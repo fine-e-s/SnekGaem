@@ -1,5 +1,5 @@
 import pygame as pg
-from game_objects import *
+from game_objects import Snake, Food
 import sys
 
 

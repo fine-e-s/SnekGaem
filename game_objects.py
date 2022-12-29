@@ -8,15 +8,14 @@ class Snake:
     def __init__(self, game):
         self.game = game
         self.size = game.TILE_SIZE
-        self.rect = pg.Rect(0, 0, self.game.TILE_SIZE - 2, self.game.TILE_SIZE - 2)
+        self.rect = pg.Rect(0, 0, self.size - 10, self.size - 10)
+        self.length = 1
         self.segments = []
         self.rect.center = self.get_random_position()
-        self.segments.append(self.rect.copy())
         self.direction = vec2(0, 0)
         self.turn = False
         self.step_delay = 200  # ms
         self.time = 0
-        self.length = 1
 
     def check_borders(self):
         if self.rect.left < 0 or self.rect.right > self.game.WINDOW_SIZE or self.rect.top < 0 \
@@ -24,12 +23,15 @@ class Snake:
             self.game.new_game()
 
     def check_body(self):
-        if [self.rect == segment for segment in self.segments[1:]]:
-            self.game.new_game()
+        for x in range(0, self.length - 1):
+            if self.rect.center == self.segments[x].center:
+                self.game.new_game()
 
     def check_food(self):
         if self.rect.center == self.game.food.rect.center:
             self.game.food.rect.center = self.get_random_position()
+            while self.game.food.rect.center in [segment.center for segment in self.segments]:
+                self.game.food.rect.center = self.get_random_position()
             self.length += 1
 
     def control(self, event):
@@ -64,14 +66,12 @@ class Snake:
             self.rect.move_ip(self.direction)
             self.segments.append(self.rect.copy())
             self.segments = self.segments[-self.length:]
-            print(self.rect)
-            print(self.segments)
+            self.check_body()
 
     def update(self):
+        self.check_food()
         self.check_borders()
         self.move()
-        self.check_body()
-        self.check_food()
 
     def draw(self):
         [pg.draw.rect(self.game.screen, 'green', segment) for segment in self.segments]
@@ -81,7 +81,7 @@ class Food:
     def __init__(self, game):
         self.game = game
         self.size = game.TILE_SIZE
-        self.rect = pg.Rect(0, 0, self.game.TILE_SIZE - 2, self.game.TILE_SIZE - 2)
+        self.rect = pg.Rect(0, 0, self.game.TILE_SIZE - 20, self.game.TILE_SIZE - 20)
         self.rect.center = self.game.snake.get_random_position()
 
     def draw(self):

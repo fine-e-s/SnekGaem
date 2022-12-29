@@ -10,8 +10,8 @@ class Snake:
         self.size = game.TILE_SIZE
         self.rect = pg.Rect(0, 0, self.game.TILE_SIZE - 2, self.game.TILE_SIZE - 2)
         self.segments = []
-        self.segments.append(self.get_random_position())
-        self.rect.center = self.segments[0]
+        self.rect.center = self.get_random_position()
+        self.segments.append(self.rect.copy())
         self.direction = vec2(0, 0)
         self.turn = False
         self.step_delay = 200  # ms
@@ -24,7 +24,7 @@ class Snake:
             self.game.new_game()
 
     def check_body(self):
-        if [self.rect.center == segment for segment in self.segments]:
+        if [self.rect == segment for segment in self.segments[1:]]:
             self.game.new_game()
 
     def check_food(self):
@@ -64,12 +64,14 @@ class Snake:
             self.rect.move_ip(self.direction)
             self.segments.append(self.rect.copy())
             self.segments = self.segments[-self.length:]
+            print(self.rect)
+            print(self.segments)
 
     def update(self):
         self.check_borders()
+        self.move()
         self.check_body()
         self.check_food()
-        self.move()
 
     def draw(self):
         [pg.draw.rect(self.game.screen, 'green', segment) for segment in self.segments]

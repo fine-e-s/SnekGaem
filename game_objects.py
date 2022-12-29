@@ -9,8 +9,9 @@ class Snake:
         self.game = game
         self.size = game.TILE_SIZE
         self.rect = pg.Rect(0, 0, self.game.TILE_SIZE - 2, self.game.TILE_SIZE - 2)
-        self.rect.center = self.get_random_position()
         self.segments = []
+        self.segments.append(self.get_random_position())
+        self.rect.center = self.segments[0]
         self.direction = vec2(0, 0)
         self.turn = False
         self.step_delay = 200  # ms
@@ -24,8 +25,7 @@ class Snake:
 
     def check_body(self):
         if [self.rect.center == segment for segment in self.segments]:
-            pass
-            #  self.game.new_game()
+            self.game.new_game()
 
     def check_food(self):
         if self.rect.center == self.game.food.rect.center:

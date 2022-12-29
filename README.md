@@ -1,3 +1,3 @@
-# Here I develope my first stupid game
+# Here I develop my first stupid game
 
 Karhart i Seryoga zdarova

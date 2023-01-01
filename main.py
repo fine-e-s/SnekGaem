@@ -1,24 +1,28 @@
 import pygame as pg
-from game_objects import Snake, Food
+from game_objects import Snake, Food, Block
 import sys
 
 
 class Game:
     def __init__(self):
         pg.init()
-        self.WINDOW_SIZE = 50 * 10
-        self.TILE_SIZE = 50
+        self.TILE_SIZE = 100
+        self.WINDOW_SIZE = self.TILE_SIZE * 10
         self.screen = pg.display.set_mode([self.WINDOW_SIZE] * 2)
+        self.sprite_group = pg.sprite.Group()
         self.clock = pg.time.Clock()
         self.new_game()
 
     def draw_grid(self):
-        [pg.draw.line(self.screen, [50] * 3, (x, 0), (x, self.WINDOW_SIZE))
+        width = 1
+        h_width = width // 2
+        [pg.draw.line(self.screen, [50] * 3, (x, 0), (x, self.WINDOW_SIZE), width)
          for x in range(0, self.WINDOW_SIZE, self.TILE_SIZE)]
-        [pg.draw.line(self.screen, [50] * 3, (0, y), (self.WINDOW_SIZE, y))
+        [pg.draw.line(self.screen, [50] * 3, (0, y), (self.WINDOW_SIZE, y), width)
          for y in range(0, self.WINDOW_SIZE, self.TILE_SIZE)]
 
     def new_game(self):
+        self.sprite_group.empty()
         self.snake = Snake(self)
         self.food = Food(self)
 
@@ -28,10 +32,13 @@ class Game:
         self.clock.tick(60)
 
     def draw(self):
+        self.sprite_group.empty()
         self.screen.fill('black')
         self.draw_grid()
         self.snake.draw()
         self.food.draw()
+
+        self.sprite_group.draw(self.screen)
 
     def check_event(self):
         for event in pg.event.get():

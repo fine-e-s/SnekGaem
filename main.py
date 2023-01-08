@@ -1,5 +1,5 @@
 import pygame as pg
-from game_objects import Snake, Food, Block
+from game_objects import Snake, Food
 import sys
 
 
@@ -15,7 +15,6 @@ class Game:
 
     def draw_grid(self):
         width = 1
-        h_width = width // 2
         [pg.draw.line(self.screen, [50] * 3, (x, 0), (x, self.WINDOW_SIZE), width)
          for x in range(0, self.WINDOW_SIZE, self.TILE_SIZE)]
         [pg.draw.line(self.screen, [50] * 3, (0, y), (self.WINDOW_SIZE, y), width)

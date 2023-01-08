@@ -222,4 +222,3 @@ class Block(pg.sprite.Sprite):
             elif (cur_dir[0] == 'Right' and next_dir[0] == 'Down') or (cur_dir[0] == 'Up' and next_dir[0] == 'Left'):
                 turn = [True, 270]
         return turn
-

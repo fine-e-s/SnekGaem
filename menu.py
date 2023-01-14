@@ -304,7 +304,6 @@ class HighscoreSubmitting:
             self.menu.game.run()
 
     def enter_char(self, event):
-        print(event.key)
         if event.key not in [pg.K_BACKSPACE, pg.K_RETURN, pg.KSCAN_RETURN, 1073741912, 9, 32, 50, 51, 52, 55] and \
                 len(self.name) < 14:
             self.name += event.unicode

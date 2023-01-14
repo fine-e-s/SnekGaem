@@ -1,17 +1,18 @@
 import pygame as pg
+
+import menu
+from settings import *
 from random import randrange
 import os
 
 vec2 = pg.math.Vector2
-path = 'snake_skins'
 
 
 class Snake:
     def __init__(self, game):
         self.game = game
-        self.size = game.TILE_SIZE
 
-        self.rect = pg.Rect(0, 0, self.size - 9, self.size - 9)
+        self.rect = pg.Rect(0, 0, TILE_SIZE - 9, TILE_SIZE - 9)
 
         self.length = 1
         self.rect.center = self.get_random_position()
@@ -28,14 +29,24 @@ class Snake:
         self.time = 0
 
     def check_borders(self):
-        if self.rect.left < 0 or self.rect.right > self.game.WINDOW_SIZE or self.rect.top < 0 \
-                or self.rect.bottom > self.game.WINDOW_SIZE:
+        if self.rect.left < 0 or self.rect.right > GAME_WINDOW_SIZE or self.rect.top < 0 \
+                or self.rect.bottom > GAME_WINDOW_SIZE:
+            self.check_highscore()
             self.game.new_game()
 
     def check_body(self):
         for x in range(0, self.length - 1):
             if self.rect.center == self.segments[x].center:
+                self.check_highscore()
                 self.game.new_game()
+
+    def check_highscore(self):
+        score = (self.length - 1) * self.length * 10
+        if score > 0:
+            score_list = self.game.highscores.highscores_list
+            for entry in score_list[::-1]:
+                if entry['score'] <= score:
+                    highscore_entry = menu.HighscoreSubmitting(self.game.menu, score, score_list.index(entry))
 
     def check_food(self):
         if self.rect.center == self.game.food.rect.center:
@@ -46,18 +57,24 @@ class Snake:
 
     def control(self, event):
         if event.type == pg.KEYDOWN and self.turn is False:
-            if event.key == pg.K_UP and self.direction != vec2(0, self.size):
-                self.direction = vec2(0, -self.size)
-                self.turn = True
-            if event.key == pg.K_DOWN and self.direction != vec2(0, -self.size):
-                self.direction = vec2(0, self.size)
-                self.turn = True
-            if event.key == pg.K_LEFT and self.direction != vec2(self.size, 0):
-                self.direction = vec2(-self.size, 0)
-                self.turn = True
-            if event.key == pg.K_RIGHT and self.direction != vec2(-self.size, 0):
-                self.direction = vec2(self.size, 0)
-                self.turn = True
+            if not self.game.pause:
+                if event.key == pg.K_UP and self.direction != vec2(0, TILE_SIZE):
+                    self.direction = vec2(0, -TILE_SIZE)
+                    self.turn = True
+                if event.key == pg.K_DOWN and self.direction != vec2(0, -TILE_SIZE):
+                    self.direction = vec2(0, TILE_SIZE)
+                    self.turn = True
+                if event.key == pg.K_LEFT and self.direction != vec2(TILE_SIZE, 0):
+                    self.direction = vec2(-TILE_SIZE, 0)
+                    self.turn = True
+                if event.key == pg.K_RIGHT and self.direction != vec2(-TILE_SIZE, 0):
+                    self.direction = vec2(TILE_SIZE, 0)
+                    self.turn = True
+                if event.key == pg.K_ESCAPE:
+                    self.game.playing = False
+                    self.game.menu.run()
+            if event.key == pg.K_p:
+                self.game.pause = not self.game.pause
 
     def delta_time(self):
         time_now = pg.time.get_ticks()
@@ -68,36 +85,36 @@ class Snake:
         return False
 
     def get_random_position(self):
-        return [randrange(self.size // 2, self.game.WINDOW_SIZE, self.size),
-                randrange(self.size // 2, self.game.WINDOW_SIZE, self.size)]
+        return [randrange(TILE_SIZE // 2, GAME_WINDOW_SIZE, TILE_SIZE),
+                randrange(TILE_SIZE // 2, GAME_WINDOW_SIZE, TILE_SIZE)]
 
     def set_head_direction(self):
-        if self.direction == [0, -self.size]:
+        if self.direction == [0, -TILE_SIZE]:
             return 'Up'
-        elif self.direction == [0, self.size]:
+        elif self.direction == [0, TILE_SIZE]:
             return 'Down'
-        elif self.direction == [self.size, 0]:
+        elif self.direction == [TILE_SIZE, 0]:
             return 'Right'
-        elif self.direction == [-self.size, 0]:
+        elif self.direction == [-TILE_SIZE, 0]:
             return 'Left'
         else:
             return 'Left'
 
     def move(self):
         if self.delta_time():
-            self.rect.move_ip(self.direction)
-            self.head_direction = self.set_head_direction()
             if self.grow:
                 self.length += 1
                 self.grow = False
+            self.rect.move_ip(self.direction)
+            self.head_direction = self.set_head_direction()
             self.segments.append(self.rect.copy())
             self.segments = self.segments[-self.length:]
 
     def update(self):
-        self.check_borders()
-        self.check_body()
         self.check_food()
         self.move()
+        self.check_borders()
+        self.check_body()
 
     def draw(self):
         self.game.sprite_group.add(Block(self.game, self.segments[len(self.segments) - 1].center,
@@ -110,8 +127,7 @@ class Snake:
 class Food:
     def __init__(self, game):
         self.game = game
-        self.size = game.TILE_SIZE
-        self.rect = pg.Rect(0, 0, self.game.TILE_SIZE - 20, self.game.TILE_SIZE - 20)
+        self.rect = pg.Rect(0, 0, TILE_SIZE - 20, TILE_SIZE - 20)
         self.rect.center = self.game.snake.get_random_position()
 
     def draw(self):
@@ -125,8 +141,8 @@ class Block(pg.sprite.Sprite):
         if block_type == 'Snake':
             image_type = self.set_type(segment_num)
             name = image_type + '.png'
-            self.image = pg.image.load(os.path.join(path, name))
-            self.image = pg.transform.scale(self.image, (game.snake.size, game.snake.size))
+            self.image = pg.image.load(os.path.join(get_snake_path(), name))
+            self.image = pg.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
             if image_type == 'Curved':
                 self.image = pg.transform.rotate(self.image, self.check_turn(segment_num)[1])
             else:
@@ -135,8 +151,8 @@ class Block(pg.sprite.Sprite):
             self.rect.center = pos
         elif block_type == 'Food':
             name = 'Food.png'
-            self.image = pg.image.load(os.path.join(path, name))
-            self.image = pg.transform.scale(self.image, (game.snake.size, game.snake.size))
+            self.image = pg.image.load(os.path.join(get_food_path(), name))
+            self.image = pg.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
             self.rect = self.image.get_rect()
             self.rect.center = pos
 

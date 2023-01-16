@@ -1,9 +1,7 @@
-from cryptography.fernet import Fernet
 from datetime import datetime
 import pickle
 from pathlib import Path
 
-KEY = b'oE4K36-wnzb4NcG_MGTXT6BO234MhMUvotdRPsSt1XQ='
 HIGHSCORES_FILE = Path('records.records')
 
 

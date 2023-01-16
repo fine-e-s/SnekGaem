@@ -149,7 +149,7 @@ class MainMenu:
         self.menu.game.run()
 
     def open_highscores(self):
-        highscores = Highscores(self.menu)
+        highscores_menu = Highscores(self.menu)
 
     def open_options(self):
         options = Options(self.menu)
@@ -304,7 +304,7 @@ class HighscoreSubmitting:
             self.menu.game.run()
 
     def enter_char(self, event):
-        if event.key not in [pg.K_BACKSPACE, pg.K_RETURN, pg.KSCAN_RETURN, 1073741912, 9, 32, 50, 51, 52, 55] and \
+        if event.key not in [pg.K_BACKSPACE, pg.K_RETURN, 1073741912, 9, 32, 50, 51, 52, 55] and \
                 len(self.name) < 14:
             self.name += event.unicode
         if event.key == pg.K_BACKSPACE:

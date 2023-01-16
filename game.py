@@ -1,6 +1,5 @@
 import pygame as pg
 
-import settings
 from settings import *
 from highscores import Highscores
 from menu import Menu
@@ -86,9 +85,9 @@ class Game:
         self.draw_text(str(score), FONT_SIZE, FULL_WINDOW_SIZE['x'] - (FULL_WINDOW_SIZE['x'] - GAME_WINDOW_SIZE) / 2,
                        FULL_WINDOW_SIZE['y'] * 0.1 + FONT_SIZE)
 
-        self.draw_text('P - pause', FONT_SIZE / 2, FULL_WINDOW_SIZE['x'] - (FULL_WINDOW_SIZE['x'] - GAME_WINDOW_SIZE) / 2,
+        self.draw_text('P - pause', FONT_SIZE / 2,
+                       FULL_WINDOW_SIZE['x'] - (FULL_WINDOW_SIZE['x'] - GAME_WINDOW_SIZE) / 2,
                        FULL_WINDOW_SIZE['y'] * 0.9 - FONT_SIZE / 2)
         self.draw_text('ESC - main menu', FONT_SIZE / 2,
                        FULL_WINDOW_SIZE['x'] - (FULL_WINDOW_SIZE['x'] - GAME_WINDOW_SIZE) / 2,
                        FULL_WINDOW_SIZE['y'] * 0.9)
-

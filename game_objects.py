@@ -1,5 +1,6 @@
 import pygame as pg
 
+import highscores
 import menu
 from settings import *
 from random import randrange
@@ -43,10 +44,10 @@ class Snake:
     def check_highscore(self):
         score = (self.length - 1) * self.length * 10
         if score > 0:
-            score_list = self.game.highscores.highscores_list
+            score_list = highscores.get_file()
             for entry in score_list[::-1]:
                 if entry['score'] <= score:
-                    highscore_entry = menu.HighscoreSubmitting(self.game.menu, score, score_list.index(entry))
+                    highscore_entry = menu.HighscoreSubmitting(self.game.menu, score)
 
     def check_food(self):
         if self.rect.center == self.game.food.rect.center:

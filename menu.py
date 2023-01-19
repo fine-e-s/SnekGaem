@@ -170,7 +170,6 @@ class Options:
         self.buttons = [
             {'text': f'Snake skin <{settings.SNAKE_SKIN}>', 'x': 0, 'y': 0, 'action': self.change_snake},
             {'text': f'Food skin <{settings.FOOD_SKIN}>', 'x': 0, 'y': 0, 'action': self.change_food},
-            {'text': 'Reset highscores', 'x': 0, 'y': 0, 'action': self.reset_highscores},
             {'text': 'Back', 'x': 0, 'y': 0, 'action': self.menu.back_to_main}
         ]
         self.arrange_buttons(FULL_WINDOW_SIZE['x'] / 2, FULL_WINDOW_SIZE['y'] * 0.8)
@@ -248,22 +247,21 @@ class Highscores:
         self.menu.get_other_text(self.other_text)
 
     def create_highscores(self):
-        score_list = self.menu.game.highscores.highscores_list
+        score_list = highscores.get_file()
         for entry in score_list:
             self.other_text.append([entry['name'], FONT_SIZE, FULL_WINDOW_SIZE['x'] / 2,
-                                   score_list.index(entry) * FONT_SIZE + FULL_WINDOW_SIZE['y'] * 0.1])
+                                    score_list.index(entry) * FONT_SIZE + FULL_WINDOW_SIZE['y'] * 0.1])
             self.other_text.append([entry['place'], FONT_SIZE, FULL_WINDOW_SIZE['x'] / 2 - TILE_SIZE * 5,
-                                   score_list.index(entry) * FONT_SIZE + FULL_WINDOW_SIZE['y'] * 0.1])
+                                    score_list.index(entry) * FONT_SIZE + FULL_WINDOW_SIZE['y'] * 0.1])
             self.other_text.append([str(entry['score']), FONT_SIZE, FULL_WINDOW_SIZE['x'] / 2 + TILE_SIZE * 5,
-                                   score_list.index(entry) * FONT_SIZE + FULL_WINDOW_SIZE['y'] * 0.1])
+                                    score_list.index(entry) * FONT_SIZE + FULL_WINDOW_SIZE['y'] * 0.1])
 
 
 class HighscoreSubmitting:
-    def __init__(self, menu, score, place):
+    def __init__(self, menu, score):
         self.menu = menu
         self.menu.game.playing = False
         self.score = score
-        self.place = place
 
         self.menu.state = 'Highscore_submitting'
 
@@ -274,7 +272,6 @@ class HighscoreSubmitting:
                             FULL_WINDOW_SIZE['y'] * 0.1 + FONT_SIZE]]
         self.menu.get_other_text(self.other_text)
         self.name = ''
-        self.time = highscores.get_current_time()
         self.create_highscore_entry()
 
     def create_highscore_entry(self):
@@ -288,24 +285,15 @@ class HighscoreSubmitting:
 
     def submit_highscore(self):
         if len(self.name) >= 1:
-            score_list = self.menu.game.highscores.highscores_list
-            score_list.append({'place': f'{self.place}', 'name': f'{self.name}', 'score': self.score,
-                               'time': self.time})
-            score_list = sorted(sorted(
-                score_list, key=lambda d: d['time'], reverse=True),
-                key=lambda e: e['score'], reverse=True
-            )
-            score_list = score_list[:10]
-            for place, entry in enumerate(score_list):
-                entry.update({'place': str(place + 1)})
-            self.menu.game.highscores.highscores_list = score_list
-            self.menu.game.highscores.write_file()
+            entry = {'name': f'{self.name}', 'score': self.score}
+            highscores.write_file(entry)
             self.menu.back_to_main()
             self.menu.game.run()
 
     def enter_char(self, event):
-        if event.key not in [pg.K_BACKSPACE, pg.K_RETURN, 1073741912, 9, 32, 50, 51, 52, 55] and \
-                len(self.name) < 14:
+        if event.key not in [pg.K_BACKSPACE, pg.K_RETURN, pg.K_TAB, 1073741912] and \
+                len(self.name) < 14 and \
+                event.unicode not in '№@#$&йцукенгшщзхъфывапролджэячсмитьбю':
             self.name += event.unicode
         if event.key == pg.K_BACKSPACE:
             self.name = self.name[:-1]

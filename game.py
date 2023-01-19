@@ -1,7 +1,6 @@
 import pygame as pg
 
 from settings import *
-from highscores import Highscores
 from menu import Menu
 from game_objects import Snake, Food
 import sys
@@ -16,7 +15,6 @@ class Game:
 
         self.playing = False
         self.pause = False
-        self.highscores = Highscores()
         self.menu = Menu(self)
         self.menu.run()
 
@@ -41,7 +39,6 @@ class Game:
     def draw(self):
         self.sprite_group.empty()
         SCREEN.fill('black')
-        # if self.playing:
         self.draw_grid()
         self.draw_score()
         self.snake.draw()
